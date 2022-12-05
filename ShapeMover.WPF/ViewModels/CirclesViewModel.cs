@@ -59,10 +59,16 @@ public class CirclesViewModel : INotifyPropertyChanged
     {
         Test = 0;
 
-        AddCircleCommand = new AddCircleCommand(this);
         MoveCircleCommand = new MoveCircleCommand(this);
-        UndoCommand = new UndoCommand(this);
-        RedoCommand = new RedoCommand(this);
+
+        AddCircleCommand = new GenericCommand(AddCircle);
+        UndoCommand = new GenericCommand(Undo, CanUndo);
+        RedoCommand = new GenericCommand(Redo, CanRedo);
+        RedoCommand.CanExecuteChanged += RedoCommand_CanExecuteChanged;
+
+        //AddCircleCommand = new AddCircleCommand(this);
+        //UndoCommand = new UndoCommand(this);
+        //RedoCommand = new RedoCommand(this);
 
         history.AddLast(current);
 
@@ -71,29 +77,37 @@ public class CirclesViewModel : INotifyPropertyChanged
         //circlesModel.AddCircle(new Point(50, 50));
     }
 
+    private void RedoCommand_CanExecuteChanged(object? sender, EventArgs e)
+    {
+        Debug.WriteLine("CanExecuteChanged");
+    }
+
     public void AddCircle()
     {
         //todo: don't hardcode height width, get from the control size
         circlesModel.AddCircle(new Point(random.Next(500), random.Next(500)));
         PropertyChanged.Invoke(this, new PropertyChangedEventArgs(nameof(Circles)));
 
+        updateHistoryWithNewAction();
+    }
+
+    private void updateHistoryWithNewAction()
+    {
         while (history.Last != current)
             history.RemoveLast();
 
         history.AddLast(new LinkedListNode<Dictionary<int, Point>>(new(Circles)));
         current = history.Last;
+
+        ((GenericCommand)RedoCommand).RaiseCanExecuteChanged();
+        ((GenericCommand)UndoCommand).RaiseCanExecuteChanged();
     }
 
     public void MoveCircle(int key, Point location)
     {
         circlesModel.MoveCircle(key, location);
 
-        //todo remove dup
-        while (history.Last != current)
-            history.RemoveLast();
-
-        history.AddLast(new LinkedListNode<Dictionary<int, Point>>(new(Circles)));
-        current = history.Last;
+        updateHistoryWithNewAction();
 
         Debug.WriteLine("Move");
     }
@@ -106,6 +120,9 @@ public class CirclesViewModel : INotifyPropertyChanged
         current = current.Previous;
         Circles = new(current.Value);
         PropertyChanged.Invoke(this, new PropertyChangedEventArgs(nameof(Circles)));
+
+        ((GenericCommand)RedoCommand).RaiseCanExecuteChanged();
+        ((GenericCommand)UndoCommand).RaiseCanExecuteChanged();
     }
 
     public void Redo()
@@ -116,5 +133,12 @@ public class CirclesViewModel : INotifyPropertyChanged
         current = current.Next;
         Circles = new(current.Value);
         PropertyChanged.Invoke(this, new PropertyChangedEventArgs(nameof(Circles)));
+
+        ((GenericCommand)RedoCommand).RaiseCanExecuteChanged();
+        ((GenericCommand)UndoCommand).RaiseCanExecuteChanged();
     }
+
+    public bool CanUndo() => current.Previous != null;
+
+    public bool CanRedo() => current.Next != null;
 }

@@ -29,4 +29,9 @@ public class AddCircleCommand : ICommand
     {
         circlesViewModel.AddCircle();
     }
+
+    public void RaiseCanExecuteChanged()
+    {
+        CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+    }
 }

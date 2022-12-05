@@ -10,18 +10,24 @@ namespace ShapeMover.WPF.Commands;
 
 public class UndoCommand : ICommand
 {
+    //public event EventHandler? CanExecuteChanged;
+
+    public event EventHandler? CanExecuteChanged
+    {
+        add { CommandManager.RequerySuggested += value; }
+        remove { CommandManager.RequerySuggested -= value; }
+    }
+
     private CirclesViewModel circlesViewModel;
 
     public UndoCommand(CirclesViewModel circlesViewModel)
     {
         this.circlesViewModel = circlesViewModel;
-    }
-
-    public event EventHandler? CanExecuteChanged;
+    }    
 
     public bool CanExecute(object? parameter)
     {
-        return true;
+        return circlesViewModel.CanUndo();
     }
 
     public void Execute(object? parameter)
