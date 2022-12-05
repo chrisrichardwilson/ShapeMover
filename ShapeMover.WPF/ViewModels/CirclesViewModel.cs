@@ -52,7 +52,7 @@ public class CirclesViewModel : INotifyPropertyChanged
     public void AddCircle()
     {
         //todo: don't hardcode height width, get from the control size
-        circlesModel.AddCircle(new Point(random.Next(500), random.Next(500)));
+        circlesModel.AddCircle(new Point(random.Next((int)Math.Floor(CanvasWidth)), random.Next((int)Math.Floor(CanvasHeight))));
         PropertyChanged.Invoke(this, new PropertyChangedEventArgs(nameof(Circles)));
 
         updateHistoryWithNewAction();

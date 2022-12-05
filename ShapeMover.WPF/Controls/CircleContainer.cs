@@ -12,7 +12,7 @@ public class CircleContainer : Control
 {
     private Canvas circleCanvas;
     private const int DIAMETER = 40;
-    private const int CIRCUMFERENCE = 3;
+    private const int CIRCLELINEWEIGHT = 3;
     private int circleDraggedID;
 
     public Dictionary<int, Point> Circles
@@ -22,7 +22,37 @@ public class CircleContainer : Control
     }
 
     public static readonly DependencyProperty CirclesProperty =
-        DependencyProperty.Register("Circles", typeof(Dictionary<int, Point>), typeof(CircleContainer), new PropertyMetadata(new Dictionary<int, Point>(), CirclesPropertyChanged));
+        DependencyProperty.Register(nameof(Circles), typeof(Dictionary<int, Point>), typeof(CircleContainer), new PropertyMetadata(new Dictionary<int, Point>(), CirclesPropertyChanged));
+
+    public ICommand MoveCircleCommand
+    {
+        get { return (ICommand)GetValue(CircleMovedCommandProperty); }
+        set { SetValue(CircleMovedCommandProperty, value); }
+    }
+
+    public static readonly DependencyProperty CircleMovedCommandProperty =
+        DependencyProperty.Register(nameof(MoveCircleCommand), typeof(ICommand), typeof(CircleContainer), new PropertyMetadata(null));
+
+
+
+    public double MyHeight
+    {
+        get { return (double)GetValue(MyHeightProperty); }
+        set { SetValue(MyHeightProperty, value); }
+    }
+
+    public static readonly DependencyProperty MyHeightProperty =
+        DependencyProperty.Register(nameof(MyHeight), typeof(double), typeof(CircleContainer), new PropertyMetadata(0d));
+
+
+    public double MyWidth
+    {
+        get { return (double)GetValue(MyWidthProperty); }
+        set { SetValue(MyWidthProperty, value); }
+    }
+
+    public static readonly DependencyProperty MyWidthProperty =
+        DependencyProperty.Register(nameof(MyWidth), typeof(double), typeof(CircleContainer), new PropertyMetadata(0d));
 
     private static void CirclesPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
@@ -34,19 +64,10 @@ public class CircleContainer : Control
         circleContainer.AddCircles();
     }
 
-    public ICommand MoveCircleCommand
-    {
-        get { return (ICommand)GetValue(CircleMovedCommandProperty); }
-        set { SetValue(CircleMovedCommandProperty, value); }
-    }
-
-    public static readonly DependencyProperty CircleMovedCommandProperty =
-        DependencyProperty.Register("MoveCircleCommand", typeof(ICommand), typeof(CircleContainer), new PropertyMetadata(null));
-
     static CircleContainer()
     {
-        DefaultStyleKeyProperty.OverrideMetadata(typeof(CircleContainer), new FrameworkPropertyMetadata(typeof(CircleContainer)));        
-    }   
+        DefaultStyleKeyProperty.OverrideMetadata(typeof(CircleContainer), new FrameworkPropertyMetadata(typeof(CircleContainer)));
+    }
 
     private void AddCircles()
     {
@@ -61,11 +82,11 @@ public class CircleContainer : Control
                 Width = DIAMETER,
                 Height = DIAMETER,
                 Stroke = Brushes.Black,
-                StrokeThickness = CIRCUMFERENCE,
+                StrokeThickness = CIRCLELINEWEIGHT,
                 Tag = circleKey
             };
 
-            circle.MouseMove += Circle_MouseMove;            
+            circle.MouseMove += Circle_MouseMove;
             circleCanvas.Children.Add(circle);
 
             Canvas.SetLeft(circle, Circles[circleKey].X);
@@ -101,9 +122,16 @@ public class CircleContainer : Control
         circleCanvas = Template.FindName("PART_CircleCanvas", this) as Canvas;
         circleCanvas.DragOver += CircleCanvas_Over;
         circleCanvas.Drop += CircleCanvas_Drop;
+        circleCanvas.SizeChanged += CircleCanvas_SizeChanged;
         AddCircles();
 
         base.OnApplyTemplate();
+    }
+
+    private void CircleCanvas_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        MyWidth = ActualWidth - DIAMETER;
+        MyHeight = ActualHeight - DIAMETER;
     }
 
     private void CircleCanvas_Over(object sender, DragEventArgs e)

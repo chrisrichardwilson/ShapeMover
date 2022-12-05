@@ -9,6 +9,6 @@ public partial class CirclesView : UserControl
 {
     public CirclesView()
     {
-        InitializeComponent();            
+        InitializeComponent();
     }
 }

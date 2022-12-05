@@ -7,7 +7,7 @@
         xmlns:views="clr-namespace:ShapeMover.WPF.Views"
         xmlns:viewmodels="clr-namespace:ShapeMover.WPF.ViewModels"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Shape Mover" Height="450" Width="800">
     <Grid>
         <views:CirclesView />
     </Grid>

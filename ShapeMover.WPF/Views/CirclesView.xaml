@@ -28,12 +28,12 @@
             <Button Content="Add" Grid.Column="0" Command="{Binding AddCircleCommand}"/>
             <Button Content="Undo" Grid.Column="1" Command="{Binding UndoCommand}"/>
             <Button Content="Redo" Grid.Column="2" Command="{Binding RedoCommand}"/>
-            <!--<TextBlock Text="{Binding Test}" Grid.Column="3"/>-->
         </Grid>
 
         <controls:CircleContainer Grid.Row="1" Circles="{Binding Circles}"
                                   Height="{Binding CanvasHeight, Mode=OneWayToSource}"
-                                  MoveCircleCommand="{Binding MoveCircleCommand}"/>
-        <!--<controls:CircleContainer Grid.Row="1" Circles="{Binding Circles}" Test="5"/>-->
+                                  MoveCircleCommand="{Binding MoveCircleCommand}"
+                                  MyHeight="{Binding CanvasHeight, Mode=OneWayToSource}"
+                                  MyWidth="{Binding CanvasWidth, Mode=OneWayToSource}"/>
     </Grid>
 </UserControl>
