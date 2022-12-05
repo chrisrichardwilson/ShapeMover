@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -39,49 +34,20 @@ public class CircleContainer : Control
         circleContainer.AddCircles();
     }
 
-
     public ICommand MoveCircleCommand
     {
         get { return (ICommand)GetValue(CircleMovedCommandProperty); }
         set { SetValue(CircleMovedCommandProperty, value); }
     }
 
-    // Using a DependencyProperty as the backing store for CircleMovedCommand.  This enables animation, styling, binding, etc...
     public static readonly DependencyProperty CircleMovedCommandProperty =
         DependencyProperty.Register("MoveCircleCommand", typeof(ICommand), typeof(CircleContainer), new PropertyMetadata(null));
-
-
-    //public static RoutedEvent CircleMovedEvent = EventManager.RegisterRoutedEvent("CircleMoved", RoutingStrategy.Bubble, typeof(RoutedEventArgs), typeof(CircleContainer));
-
-    //public event RoutedEventHandler CircleMoved
-    //{
-    //    add 
-    //    {
-    //        AddHandler(CircleMovedEvent, value);
-    //    }
-    //    remove
-    //    {
-    //        RemoveHandler(CircleMovedEvent, value);
-    //    }
-    //}
-
-    //public Size CanvasSize
-    //{
-    //    get { return (Size)GetValue(CanvasSizeProperty); }
-    //    set { SetValue(CanvasSizeProperty, value); }
-    //}
-
-    //// Using a DependencyProperty as the backing store for CanvasSize.  This enables animation, styling, binding, etc...
-    //public static readonly DependencyProperty CanvasSizeProperty =
-    //    DependencyProperty.Register("CanvasSize", typeof(Size), typeof(CircleContainer), new PropertyMetadata(new Size()));
-
 
     static CircleContainer()
     {
         DefaultStyleKeyProperty.OverrideMetadata(typeof(CircleContainer), new FrameworkPropertyMetadata(typeof(CircleContainer)));        
     }   
 
-    //Todo: This whole method can probably be removed, just for testing.
     private void AddCircles()
     {
         if (circleCanvas == null)
@@ -109,14 +75,11 @@ public class CircleContainer : Control
 
     private void CircleCanvas_Drop(object sender, DragEventArgs e)
     {
-        //RaiseEvent(new RoutedEventArgs(CircleMovedEvent, this));
         if (MoveCircleCommand == null)
             return;
 
         Point dropPosition = e.GetPosition(circleCanvas);
         MoveCircleCommand.Execute((circleDraggedID, dropPosition));
-
-        Debug.WriteLine("CircleCanvas_Drop");
     }
 
     private void Circle_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
@@ -130,8 +93,6 @@ public class CircleContainer : Control
         {
             circleDraggedID = (int)circle.Tag;
             DragDrop.DoDragDrop(circle, new DataObject(DataFormats.Serializable, circle), DragDropEffects.Move);
-            
-            //Debug.WriteLine($"circleDraggedID = {circleDraggedID}");
         }
     }
 

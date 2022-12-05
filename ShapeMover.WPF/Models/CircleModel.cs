@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 
 namespace ShapeMover.WPF.Models;
 
+//todo: remove this if it isn't used
 public class CircleModel
 {
     public Point Location { get; set; }

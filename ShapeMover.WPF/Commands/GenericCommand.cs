@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace ShapeMover.WPF.Commands;
@@ -10,12 +6,9 @@ namespace ShapeMover.WPF.Commands;
 public class GenericCommand : ICommand
 {
     public event EventHandler CanExecuteChanged;
-    //{
-    //    add { CommandManager.RequerySuggested += value; }
-    //    remove { CommandManager.RequerySuggested -= value; }
-    //}
     private Action methodToExecute;
     private Func<bool> canExecuteEvaluator;
+
     public GenericCommand(Action methodToExecute, Func<bool> canExecuteEvaluator)
     {
         this.methodToExecute = methodToExecute;

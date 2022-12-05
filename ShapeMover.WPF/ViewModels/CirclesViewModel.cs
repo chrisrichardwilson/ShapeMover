@@ -2,12 +2,7 @@
 using ShapeMover.WPF.Models;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -22,18 +17,6 @@ public class CirclesViewModel : INotifyPropertyChanged
     CirclesModel circlesModel = new();
 
     Random random = new Random();
-
-    //Func<CircleModel, int> AddCircleAction => circlesModel.AddCircle;
-
-    public int Test { get; set; }
-
-    //public ObservableCollection<Point> Circles
-    //{
-    //    get
-    //    {
-
-    //    }
-    //}
 
     public Dictionary<int, Point> Circles
     {
@@ -57,29 +40,13 @@ public class CirclesViewModel : INotifyPropertyChanged
 
     public CirclesViewModel()
     {
-        Test = 0;
-
         MoveCircleCommand = new MoveCircleCommand(this);
 
         AddCircleCommand = new GenericCommand(AddCircle);
         UndoCommand = new GenericCommand(Undo, CanUndo);
         RedoCommand = new GenericCommand(Redo, CanRedo);
-        RedoCommand.CanExecuteChanged += RedoCommand_CanExecuteChanged;
-
-        //AddCircleCommand = new AddCircleCommand(this);
-        //UndoCommand = new UndoCommand(this);
-        //RedoCommand = new RedoCommand(this);
 
         history.AddLast(current);
-
-        //test code
-        //circlesModel.AddCircle(new Point(10, 10));
-        //circlesModel.AddCircle(new Point(50, 50));
-    }
-
-    private void RedoCommand_CanExecuteChanged(object? sender, EventArgs e)
-    {
-        Debug.WriteLine("CanExecuteChanged");
     }
 
     public void AddCircle()
@@ -108,8 +75,6 @@ public class CirclesViewModel : INotifyPropertyChanged
         circlesModel.MoveCircle(key, location);
 
         updateHistoryWithNewAction();
-
-        Debug.WriteLine("Move");
     }
 
     public void Undo()
