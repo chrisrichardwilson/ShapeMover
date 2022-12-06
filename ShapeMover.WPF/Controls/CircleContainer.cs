@@ -20,6 +20,7 @@ public class CircleContainer : Control
     private const int DIAMETER = 40;
     private const int CIRCLELINEWEIGHT = 3;
     private int circleDraggedID;
+    private Point dragOffset;
 
     /// <summary>
     /// Collection of circles to draw on the canvas. key = circle ID, value = position of circle.
@@ -80,11 +81,8 @@ public class CircleContainer : Control
         set { SetValue(ColourCirclesProperty, value); }
     }
 
-    // Using a DependencyProperty as the backing store for ColourCircles.  This enables animation, styling, binding, etc...
     public static readonly DependencyProperty ColourCirclesProperty =
         DependencyProperty.Register(nameof(ColourCircles), typeof(bool), typeof(CircleContainer), new PropertyMetadata(false));
-
-
 
     static CircleContainer()
     {
@@ -154,21 +152,23 @@ public class CircleContainer : Control
             return;
 
         Point dropPosition = e.GetPosition(circleCanvas);
-        MoveCircleCommand.Execute((circleDraggedID, dropPosition));
+        MoveCircleCommand.Execute((circleDraggedID, new Point(dropPosition.X - dragOffset.X, dropPosition.Y - dragOffset.Y)));
     }
 
-    private void Circle_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+    private void Circle_MouseMove(object sender, MouseEventArgs e)
     {
         Ellipse? circle = sender as Ellipse;
 
         if (circle == null)
             return;
 
-        if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
+        if (e.LeftButton == MouseButtonState.Pressed)
         {
+            dragOffset = e.GetPosition(circle);
+
             circleDraggedID = (int)circle.Tag;
             DragDrop.DoDragDrop(circle, new DataObject(DataFormats.Serializable, circle), DragDropEffects.Move);
-        }
+        }        
     }
 
     public override void OnApplyTemplate()
@@ -195,9 +195,9 @@ public class CircleContainer : Control
         if (circle == null)
             return;
 
-        Point dropPosition = e.GetPosition(circleCanvas);
+        Point position = e.GetPosition(circleCanvas);
 
-        Canvas.SetLeft(circle, dropPosition.X);
-        Canvas.SetTop(circle, dropPosition.Y);
+        Canvas.SetLeft(circle, position.X - dragOffset.X);
+        Canvas.SetTop(circle, position.Y - dragOffset.Y);
     }
 }
