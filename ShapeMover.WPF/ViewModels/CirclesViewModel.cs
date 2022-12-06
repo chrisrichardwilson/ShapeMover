@@ -1,4 +1,6 @@
-﻿using ShapeMover.WPF.Commands;
+﻿using ShapeMover.Helpers.Classes;
+using ShapeMover.Helpers.Interfaces;
+using ShapeMover.WPF.Commands;
 using ShapeMover.WPF.Models;
 using System;
 using System.Collections.Generic;
@@ -16,7 +18,7 @@ public class CirclesViewModel : INotifyPropertyChanged
 
     CirclesModel circlesModel = new();
 
-    Random random = new Random();
+    IRandomGenerator randomGenerator;
 
     public Dictionary<int, Point> Circles
     {
@@ -38,8 +40,9 @@ public class CirclesViewModel : INotifyPropertyChanged
     public ICommand UndoCommand { get; set; }
     public ICommand RedoCommand { get; set; }
 
-    public CirclesViewModel()
+    public CirclesViewModel(IRandomGenerator randomGenerator)
     {
+        this.randomGenerator = randomGenerator;
         MoveCircleCommand = new MoveCircleCommand(this);
 
         AddCircleCommand = new GenericCommand(AddCircle);
@@ -49,11 +52,13 @@ public class CirclesViewModel : INotifyPropertyChanged
         history.AddLast(current);
     }
 
+    public CirclesViewModel() : this(new RandomGenerator())
+    { }
+
     public void AddCircle()
     {
-        //todo: don't hardcode height width, get from the control size
-        circlesModel.AddCircle(new Point(random.Next((int)Math.Floor(CanvasWidth)), random.Next((int)Math.Floor(CanvasHeight))));
-        PropertyChanged.Invoke(this, new PropertyChangedEventArgs(nameof(Circles)));
+        circlesModel.AddCircle(new Point(randomGenerator.Generate((int)Math.Floor(CanvasWidth)), randomGenerator.Generate((int)Math.Floor(CanvasHeight))));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Circles)));
 
         updateHistoryWithNewAction();
     }
@@ -84,7 +89,7 @@ public class CirclesViewModel : INotifyPropertyChanged
 
         current = current.Previous;
         Circles = new(current.Value);
-        PropertyChanged.Invoke(this, new PropertyChangedEventArgs(nameof(Circles)));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Circles)));
 
         ((GenericCommand)RedoCommand).RaiseCanExecuteChanged();
         ((GenericCommand)UndoCommand).RaiseCanExecuteChanged();
@@ -97,7 +102,7 @@ public class CirclesViewModel : INotifyPropertyChanged
 
         current = current.Next;
         Circles = new(current.Value);
-        PropertyChanged.Invoke(this, new PropertyChangedEventArgs(nameof(Circles)));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Circles)));
 
         ((GenericCommand)RedoCommand).RaiseCanExecuteChanged();
         ((GenericCommand)UndoCommand).RaiseCanExecuteChanged();
