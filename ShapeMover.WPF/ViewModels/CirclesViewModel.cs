@@ -23,12 +23,12 @@ public class CirclesViewModel : INotifyPropertyChanged
       to its next position and restoring the Circles collection to that state. Undo is unavailable if current.Previous
       is null. Likewise, redo is unavailable if current.Next is null.
 
-      When a new action is performed (Add or move a circle, without using undo / redo) everything beyond the current
+      When a new action is performed (Add or move a circle, without using undo / redo) every node/state beyond the current
       node is discarded.
 
       This approach uses a memento pattern. An alternative approach would be the Command Pattern to only store the changes
       between states. This benefits from using less memory but is more complicated to implement. I went with the
-      memento pattern since it is much simpler and the state collection is unlikely to get big enough for the memory
+      memento pattern since it is simpler and the state collection is unlikely to get big enough for the memory
       requirement to become a problem.
      */
     private LinkedList<Dictionary<int, Point>> history = new();
@@ -120,18 +120,6 @@ public class CirclesViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// Removes all history beyond the current state, then adds the current state, then sets current to the current state.
-    /// </summary>
-    private void updateHistoryWithNewAction()
-    {
-        while (history.Last != current)
-            history.RemoveLast();
-
-        history.AddLast(new LinkedListNode<Dictionary<int, Point>>(new(Circles)));
-        current = history.Last;
-    }
-
-    /// <summary>
     /// Move circle in Circles collection.
     /// </summary>
     /// <param name="key">Key of circle.</param>
@@ -144,6 +132,18 @@ public class CirclesViewModel : INotifyPropertyChanged
 
         ((GenericCommand)RedoCommand).RaiseCanExecuteChanged();
         ((GenericCommand)UndoCommand).RaiseCanExecuteChanged();
+    }
+
+    /// <summary>
+    /// Removes all history beyond the current state, then adds the current state, then sets current to the current state.
+    /// </summary>
+    private void updateHistoryWithNewAction()
+    {
+        while (history.Last != current)
+            history.RemoveLast();
+
+        history.AddLast(new LinkedListNode<Dictionary<int, Point>>(new(Circles)));
+        current = history.Last;
     }
 
     /// <summary>
@@ -187,6 +187,6 @@ public class CirclesViewModel : INotifyPropertyChanged
     /// <summary>
     /// Determines if Redo can be called. Redo isn't available if there are no states after the current state.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>True if Redo is possible, false otherwise.</returns>
     public bool CanRedo() => current.Next != null;
 }

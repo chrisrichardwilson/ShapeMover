@@ -132,12 +132,15 @@ public class CircleContainer : Control
     }
 
     /// <summary>
-    /// Simple way to fill a cirlce with a random colour based on the tag (ID) of the circle. ID to colour
+    /// Simple way to fill a circle with a random colour based on the tag (ID) of the circle. ID to colour
     /// mappings are always consistent. Picks from the predefined SolidColorBrushes in Brush.
     /// </summary>
     /// <param name="circle">The circle to add a background colour to.</param>
     private void AddBackgroundToCircle(Ellipse circle)
     {
+        //Use reflection to get all SolidColorBrush properties of Brushes, then pick one at Random. Random takes
+        //the circle Tag (the ID of the circle) as the seed so the same ID will always result in the same colour.
+
         PropertyInfo[] solidBrushProperties = typeof(Brushes).GetProperties()
             .Where(p => p.PropertyType.Equals(typeof(SolidColorBrush))).ToArray();
 
@@ -168,7 +171,7 @@ public class CircleContainer : Control
 
             circleDraggedID = (int)circle.Tag;
             DragDrop.DoDragDrop(circle, new DataObject(DataFormats.Serializable, circle), DragDropEffects.Move);
-        }        
+        }
     }
 
     public override void OnApplyTemplate()

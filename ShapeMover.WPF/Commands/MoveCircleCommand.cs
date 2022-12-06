@@ -15,7 +15,7 @@ public class MoveCircleCommand : ICommand
     /// <summary>
     /// A <see cref="ICommand"/> for moving a circle.
     /// </summary>
-    /// <param name="moveAction">The method to call to move a circle, param 1: circle key, param2: position</param>
+    /// <param name="moveAction">The method to call to move a circle, param 1: circle key, param2: position.</param>
     public MoveCircleCommand(Action<int, Point> moveAction)
     {
         this.moveAction = moveAction; 

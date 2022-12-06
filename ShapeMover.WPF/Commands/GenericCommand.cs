@@ -58,7 +58,7 @@ public class GenericCommand : ICommand
     }
 
     /// <summary>
-    /// Causes evaluation of condition that determines if the command can be executed.
+    /// Causes evaluation of the condition that determines if the command can be executed.
     /// </summary>
     public void RaiseCanExecuteChanged()
     {

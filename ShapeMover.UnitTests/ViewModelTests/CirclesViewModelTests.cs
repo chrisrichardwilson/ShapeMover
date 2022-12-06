@@ -76,7 +76,7 @@ public class CirclesViewModelTests
     }
 
     /// <summary>
-    /// Test calling the Undo method after adding a circle will result in no circles in the Circles collection.
+    /// Test calling the Undo method after adding a single circle will result in no circles in the Circles collection.
     /// </summary>
     [TestMethod]
     public void Undo_AddCircle_UndoSuccessful()
@@ -181,7 +181,7 @@ public class CirclesViewModelTests
 
         testClass.AddCircle();
 
-        //these redos will have no effect since we did AddCirle last
+        //these redos will have no effect since the last action was AddCircle
         testClass.Redo();
         testClass.Redo();
         testClass.Redo();
