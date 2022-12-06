@@ -10,8 +10,6 @@ namespace ShapeMover.WPF.Commands;
 /// </summary>
 public class MoveCircleCommand : ICommand
 {
-    private CirclesViewModel circlesViewModel;
-
     private Action<int, Point> moveAction;
 
     /// <summary>

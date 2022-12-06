@@ -15,7 +15,7 @@ namespace ShapeMover.WPF.ViewModels;
 /// </summary>
 public class CirclesViewModel : INotifyPropertyChanged
 {
-    public event PropertyChangedEventHandler PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     /*The undo/redo logic uses a linked list to store the complete state of the Circles collection with every change.
       A current node points to the current state. Undo is then enabled by moving the current pointer to the previous

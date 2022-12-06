@@ -16,7 +16,7 @@ namespace ShapeMover.WPF.Controls;
 [TemplatePart(Name = "PART_CircleCanvas", Type = typeof(Canvas))]
 public class CircleContainer : Control
 {
-    private Canvas circleCanvas;
+    private Canvas? circleCanvas;
     private const int DIAMETER = 40;
     private const int CIRCLELINEWEIGHT = 3;
     private int circleDraggedID;
@@ -145,7 +145,7 @@ public class CircleContainer : Control
 
         Random random = new Random((int)circle.Tag);
 
-        circle.Fill = (Brush)solidBrushProperties![random.Next(solidBrushProperties.Length)].GetValue(null);
+        circle.Fill = solidBrushProperties[random.Next(solidBrushProperties.Length)].GetValue(null) as Brush;
     }
 
     private void CircleCanvas_Drop(object sender, DragEventArgs e)
@@ -174,7 +174,7 @@ public class CircleContainer : Control
     public override void OnApplyTemplate()
     {
         circleCanvas = Template.FindName("PART_CircleCanvas", this) as Canvas;
-        circleCanvas.DragOver += CircleCanvas_Over;
+        circleCanvas!.DragOver += CircleCanvas_Over;
         circleCanvas.Drop += CircleCanvas_Drop;
         circleCanvas.SizeChanged += CircleCanvas_SizeChanged;
         AddCircles();

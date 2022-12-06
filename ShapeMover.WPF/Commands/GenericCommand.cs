@@ -8,7 +8,7 @@ namespace ShapeMover.WPF.Commands;
 /// </summary>
 public class GenericCommand : ICommand
 {
-    public event EventHandler CanExecuteChanged;
+    public event EventHandler? CanExecuteChanged;
 
     /// <summary>
     /// The method to be executed when Execute is called.
