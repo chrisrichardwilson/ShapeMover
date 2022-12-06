@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
@@ -19,8 +20,9 @@ public class CircleContainer : Control
     private Canvas? circleCanvas;
     private const int DIAMETER = 40;
     private const int CIRCLELINEWEIGHT = 3;
-    private int circleDraggedID;
+    private Ellipse? draggedCircle;
     private Point dragOffset;
+    private bool circleDropped;
 
     /// <summary>
     /// Collection of circles to draw on the canvas. key = circle ID, value = position of circle.
@@ -95,6 +97,7 @@ public class CircleContainer : Control
         circleCanvas!.DragOver += CircleCanvas_Over;
         circleCanvas.Drop += CircleCanvas_Drop;
         circleCanvas.SizeChanged += CircleCanvas_SizeChanged;
+
         AddCircles();
 
         base.OnApplyTemplate();
@@ -162,11 +165,12 @@ public class CircleContainer : Control
 
     private void CircleCanvas_Drop(object sender, DragEventArgs e)
     {
+        circleDropped = true;
+
         if (MoveCircleCommand == null)
             return;
 
-        Point dropPosition = e.GetPosition(circleCanvas);
-        MoveCircleCommand.Execute((circleDraggedID, new Point(dropPosition.X - dragOffset.X, dropPosition.Y - dragOffset.Y)));
+        MoveCircleCommand.Execute(((int)draggedCircle!.Tag, new Point(Canvas.GetLeft(draggedCircle), Canvas.GetTop(draggedCircle))));
     }
 
     private void Circle_MouseMove(object sender, MouseEventArgs e)
@@ -179,9 +183,16 @@ public class CircleContainer : Control
         if (e.LeftButton == MouseButtonState.Pressed)
         {
             dragOffset = e.GetPosition(circle);
-
-            circleDraggedID = (int)circle.Tag;
+            draggedCircle = circle;
+            circleDropped = false;
             DragDrop.DoDragDrop(circle, new DataObject(DataFormats.Serializable, circle), DragDropEffects.Move);
+
+            //If the circle has been dragged, but no drop event on the canvas has fired, then it has been dragged
+            //to the boundary without a drop on the canvas, i.e. the user has dragged to the edge of the control
+            //and released the mouse button outside the control. In this case MoveCircleCommand is called with
+            //the current circle location.
+            if (!circleDropped)
+                MoveCircleCommand.Execute(((int)draggedCircle.Tag, new Point(Canvas.GetLeft(draggedCircle), Canvas.GetTop(draggedCircle))));
         }
     }
 
@@ -199,6 +210,13 @@ public class CircleContainer : Control
             return;
 
         Point position = e.GetPosition(circleCanvas);
+
+        double left = position.X - dragOffset.X;
+        double top = position.Y - dragOffset.Y;
+
+        //stop the circle being dragged outside the canvas
+        if (top < 0 || top > MyHeight || left < 0 || left > MyWidth)
+            return;
 
         Canvas.SetLeft(circle, position.X - dragOffset.X);
         Canvas.SetTop(circle, position.Y - dragOffset.Y);
