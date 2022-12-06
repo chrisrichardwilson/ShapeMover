@@ -93,7 +93,7 @@ public class CircleContainer : Control
 
     private static void CirclesPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        CircleContainer circleContainer = d as CircleContainer;
+        CircleContainer? circleContainer = d as CircleContainer;
 
         if (circleContainer == null)
             return;
@@ -159,7 +159,7 @@ public class CircleContainer : Control
 
     private void Circle_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
     {
-        Ellipse circle = sender as Ellipse;
+        Ellipse? circle = sender as Ellipse;
 
         if (circle == null)
             return;
@@ -190,7 +190,7 @@ public class CircleContainer : Control
 
     private void CircleCanvas_Over(object sender, DragEventArgs e)
     {
-        Ellipse circle = e.Data.GetData(DataFormats.Serializable) as Ellipse;
+        Ellipse? circle = e.Data.GetData(DataFormats.Serializable) as Ellipse;
 
         if (circle == null)
             return;

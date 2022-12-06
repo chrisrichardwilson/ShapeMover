@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Input;
+using System.Windows.Navigation;
 
 namespace ShapeMover.WPF.Commands;
 
@@ -18,14 +19,14 @@ public class GenericCommand : ICommand
     /// <summary>
     /// The method which evaluates the result of CanExecute.
     /// </summary>
-    private Func<bool> canExecuteEvaluator;
+    private Func<bool>? canExecuteEvaluator;
 
     /// <summary>
     /// A generic <see cref="ICommand"/> class which takes an Action to execute and a Func<bool> to evaluate if execution is possible.
     /// </summary>
     /// <param name="methodToExecute">The method to be executed when Execute is called.</param>
     /// <param name="canExecuteEvaluator">Optional, The method which evaluates the result of CanExecute. Omit for CanExecute to always be true</param>
-    public GenericCommand(Action methodToExecute, Func<bool> canExecuteEvaluator)
+    public GenericCommand(Action methodToExecute, Func<bool>? canExecuteEvaluator)
     {
         this.methodToExecute = methodToExecute;
         this.canExecuteEvaluator = canExecuteEvaluator;
@@ -40,7 +41,7 @@ public class GenericCommand : ICommand
     {
     }
 
-    public bool CanExecute(object parameter)
+    public bool CanExecute(object? parameter)
     {
         if (this.canExecuteEvaluator == null)
         {
@@ -51,7 +52,7 @@ public class GenericCommand : ICommand
         return result;
     }
 
-    public void Execute(object parameter)
+    public void Execute(object? parameter)
     {
         this.methodToExecute.Invoke();
     }
