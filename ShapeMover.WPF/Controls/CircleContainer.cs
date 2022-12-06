@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -67,6 +70,22 @@ public class CircleContainer : Control
     public static readonly DependencyProperty MyWidthProperty =
         DependencyProperty.Register(nameof(MyWidth), typeof(double), typeof(CircleContainer), new PropertyMetadata(0d));
 
+
+    /// <summary>
+    /// If true circles are given a random colour. If false circles are drawn as a simple black outline.
+    /// </summary>
+    public bool ColourCircles
+    {
+        get { return (bool)GetValue(ColourCirclesProperty); }
+        set { SetValue(ColourCirclesProperty, value); }
+    }
+
+    // Using a DependencyProperty as the backing store for ColourCircles.  This enables animation, styling, binding, etc...
+    public static readonly DependencyProperty ColourCirclesProperty =
+        DependencyProperty.Register(nameof(ColourCircles), typeof(bool), typeof(CircleContainer), new PropertyMetadata(false));
+
+
+
     static CircleContainer()
     {
         DefaultStyleKeyProperty.OverrideMetadata(typeof(CircleContainer), new FrameworkPropertyMetadata(typeof(CircleContainer)));
@@ -103,11 +122,30 @@ public class CircleContainer : Control
             };
 
             circle.MouseMove += Circle_MouseMove;
+
+            if (ColourCircles)
+                AddBackgroundToCircle(circle);
+
             circleCanvas.Children.Add(circle);
 
             Canvas.SetLeft(circle, Circles[circleKey].X);
             Canvas.SetTop(circle, Circles[circleKey].Y);
         }
+    }
+
+    /// <summary>
+    /// Simple way to fill a cirlce with a random colour based on the tag (ID) of the circle. ID to colour
+    /// mappings are always consistent. Picks from the predefined SolidColorBrushes in Brush.
+    /// </summary>
+    /// <param name="circle">The circle to add a background colour to.</param>
+    private void AddBackgroundToCircle(Ellipse circle)
+    {
+        PropertyInfo[] solidBrushProperties = typeof(Brushes).GetProperties()
+            .Where(p => p.PropertyType.Equals(typeof(SolidColorBrush))).ToArray();
+
+        Random random = new Random((int)circle.Tag);
+
+        circle.Fill = (Brush)solidBrushProperties![random.Next(solidBrushProperties.Length)].GetValue(null);
     }
 
     private void CircleCanvas_Drop(object sender, DragEventArgs e)

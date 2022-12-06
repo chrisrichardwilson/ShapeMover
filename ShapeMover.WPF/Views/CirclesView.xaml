@@ -34,6 +34,7 @@
                                   Height="{Binding CanvasHeight, Mode=OneWayToSource}"
                                   MoveCircleCommand="{Binding MoveCircleCommand}"
                                   MyHeight="{Binding CanvasHeight, Mode=OneWayToSource}"
-                                  MyWidth="{Binding CanvasWidth, Mode=OneWayToSource}"/>
+                                  MyWidth="{Binding CanvasWidth, Mode=OneWayToSource}"
+                                  ColourCircles="True"/>
     </Grid>
 </UserControl>
