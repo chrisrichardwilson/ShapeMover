@@ -5,9 +5,15 @@ using System.Windows;
 
 namespace ShapeMover.UnitTests.ViewModelTests;
 
+/// <summary>
+/// Test fixture for the <see cref="CirclesViewModel"/> class.
+/// </summary>
 [TestClass]
 public class CirclesViewModelTests
 {
+    /// <summary>
+    /// Test calling the AddCircle method results in a circle in the Circles collection.
+    /// </summary>
     [TestMethod]
     public void AddCircle_SingleCircle_CircleAdded()
     {
@@ -25,6 +31,9 @@ public class CirclesViewModelTests
         Assert.AreEqual(200, testClass.Circles[0].Y);
     }
 
+    /// <summary>
+    /// Test calling the AddCircle method multiple times results in the expected circles in the Circles collection.
+    /// </summary>
     [TestMethod]
     public void AddCircle_MultipleCircles_CirclesAdded()
     {
@@ -47,6 +56,9 @@ public class CirclesViewModelTests
         Assert.AreEqual(350, testClass.Circles[1].Y);
     }
 
+    /// <summary>
+    /// Test calling the MoveCircle method updates the location of the expected circle.
+    /// </summary>
     [TestMethod]
     public void MoveCircle_SingleCircle_CircleMoved()
     {
@@ -63,6 +75,9 @@ public class CirclesViewModelTests
         Assert.AreEqual(11, testClass.Circles[0].Y);
     }
 
+    /// <summary>
+    /// Test calling the Undo method after adding a circle will result in no circles in the Circles collection.
+    /// </summary>
     [TestMethod]
     public void Undo_AddCircle_UndoSuccessful()
     {
@@ -77,6 +92,9 @@ public class CirclesViewModelTests
         Assert.AreEqual(0, testClass.Circles.Count);
     }
 
+    /// <summary>
+    /// Test calling the Redo method after adding a circle then undoing that action results in the expected circle being in the Circles collection.
+    /// </summary>
     [TestMethod]
     public void Redo_AddCircle_RedoSuccessful()
     {
@@ -94,6 +112,9 @@ public class CirclesViewModelTests
         Assert.AreEqual(100, testClass.Circles[0].Y);
     }
 
+    /// <summary>
+    /// Test calling the Undo method after moving a circle results in the move being undone.
+    /// </summary>
     [TestMethod]
     public void Undo_MoveCircle_UndoSuccessful()
     {
@@ -111,6 +132,9 @@ public class CirclesViewModelTests
         Assert.AreEqual(100, testClass.Circles[0].Y);
     }
 
+    /// <summary>
+    /// Test calling Redo method after undoing a move results in the correct circle location.
+    /// </summary>
     [TestMethod]
     public void Redo_MoveCircle_RedoSuccessful()
     {
@@ -129,6 +153,11 @@ public class CirclesViewModelTests
         Assert.AreEqual(300, testClass.Circles[0].Y);
     }
 
+    /// <summary>
+    /// Test that calling the Redo method after a series of Undos followed by adding a circle has no effect.
+    /// When the AddCircle method is called after a series of undos the following states are discarded so
+    /// there are no "future" states to redo.
+    /// </summary>
     [TestMethod]
     public void Redo_HistoryTruncated_NoRedo()
     {

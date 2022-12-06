@@ -5,13 +5,22 @@ using System.Windows.Input;
 
 namespace ShapeMover.WPF.Commands;
 
+/// <summary>
+/// A <see cref="ICommand"/> for moving a circle.
+/// </summary>
 public class MoveCircleCommand : ICommand
 {
     private CirclesViewModel circlesViewModel;
 
-    public MoveCircleCommand(CirclesViewModel circlesViewModel)
+    private Action<int, Point> moveAction;
+
+    /// <summary>
+    /// A <see cref="ICommand"/> for moving a circle.
+    /// </summary>
+    /// <param name="moveAction">The method to call to move a circle, param 1: circle key, param2: position</param>
+    public MoveCircleCommand(Action<int, Point> moveAction)
     {
-        this.circlesViewModel = circlesViewModel;
+        this.moveAction = moveAction; 
     }
 
     public event EventHandler? CanExecuteChanged;
@@ -25,6 +34,6 @@ public class MoveCircleCommand : ICommand
         if (!keyPosition.HasValue)
             return;
 
-        circlesViewModel.MoveCircle(keyPosition.Value.Item1, keyPosition.Value.Item2);
+        moveAction.Invoke(keyPosition.Value.Item1, keyPosition.Value.Item2);
     }
 }

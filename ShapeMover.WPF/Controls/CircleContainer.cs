@@ -7,6 +7,9 @@ using System.Windows.Shapes;
 
 namespace ShapeMover.WPF.Controls;
 
+/// <summary>
+/// A control that draws circles on a canvas and allows the user to drag them to different positions.
+/// </summary>
 [TemplatePart(Name = "PART_CircleCanvas", Type = typeof(Canvas))]
 public class CircleContainer : Control
 {
@@ -15,6 +18,9 @@ public class CircleContainer : Control
     private const int CIRCLELINEWEIGHT = 3;
     private int circleDraggedID;
 
+    /// <summary>
+    /// Collection of circles to draw on the canvas. key = circle ID, value = position of circle.
+    /// </summary>
     public Dictionary<int, Point> Circles
     {
         get { return (Dictionary<int, Point>)GetValue(CirclesProperty); }
@@ -24,6 +30,9 @@ public class CircleContainer : Control
     public static readonly DependencyProperty CirclesProperty =
         DependencyProperty.Register(nameof(Circles), typeof(Dictionary<int, Point>), typeof(CircleContainer), new PropertyMetadata(new Dictionary<int, Point>(), CirclesPropertyChanged));
 
+    /// <summary>
+    /// A command that will be called when a circle is dragged.
+    /// </summary>
     public ICommand MoveCircleCommand
     {
         get { return (ICommand)GetValue(CircleMovedCommandProperty); }
@@ -34,7 +43,9 @@ public class CircleContainer : Control
         DependencyProperty.Register(nameof(MoveCircleCommand), typeof(ICommand), typeof(CircleContainer), new PropertyMetadata(null));
 
 
-
+    /// <summary>
+    /// The height of the drawing area.
+    /// </summary>
     public double MyHeight
     {
         get { return (double)GetValue(MyHeightProperty); }
@@ -44,7 +55,9 @@ public class CircleContainer : Control
     public static readonly DependencyProperty MyHeightProperty =
         DependencyProperty.Register(nameof(MyHeight), typeof(double), typeof(CircleContainer), new PropertyMetadata(0d));
 
-
+    /// <summary>
+    /// The width of the drawing area.
+    /// </summary>
     public double MyWidth
     {
         get { return (double)GetValue(MyWidthProperty); }
@@ -53,6 +66,11 @@ public class CircleContainer : Control
 
     public static readonly DependencyProperty MyWidthProperty =
         DependencyProperty.Register(nameof(MyWidth), typeof(double), typeof(CircleContainer), new PropertyMetadata(0d));
+
+    static CircleContainer()
+    {
+        DefaultStyleKeyProperty.OverrideMetadata(typeof(CircleContainer), new FrameworkPropertyMetadata(typeof(CircleContainer)));
+    }
 
     private static void CirclesPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
@@ -64,11 +82,9 @@ public class CircleContainer : Control
         circleContainer.AddCircles();
     }
 
-    static CircleContainer()
-    {
-        DefaultStyleKeyProperty.OverrideMetadata(typeof(CircleContainer), new FrameworkPropertyMetadata(typeof(CircleContainer)));
-    }
-
+    /// <summary>
+    /// Draws all circles on the cavas based on the values in the Circles collection.
+    /// </summary>
     private void AddCircles()
     {
         if (circleCanvas == null)
