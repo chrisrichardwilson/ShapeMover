@@ -89,6 +89,17 @@ public class CircleContainer : Control
         DefaultStyleKeyProperty.OverrideMetadata(typeof(CircleContainer), new FrameworkPropertyMetadata(typeof(CircleContainer)));
     }
 
+    public override void OnApplyTemplate()
+    {
+        circleCanvas = Template.FindName("PART_CircleCanvas", this) as Canvas;
+        circleCanvas!.DragOver += CircleCanvas_Over;
+        circleCanvas.Drop += CircleCanvas_Drop;
+        circleCanvas.SizeChanged += CircleCanvas_SizeChanged;
+        AddCircles();
+
+        base.OnApplyTemplate();
+    }
+
     private static void CirclesPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         CircleContainer? circleContainer = d as CircleContainer;
@@ -172,17 +183,6 @@ public class CircleContainer : Control
             circleDraggedID = (int)circle.Tag;
             DragDrop.DoDragDrop(circle, new DataObject(DataFormats.Serializable, circle), DragDropEffects.Move);
         }
-    }
-
-    public override void OnApplyTemplate()
-    {
-        circleCanvas = Template.FindName("PART_CircleCanvas", this) as Canvas;
-        circleCanvas!.DragOver += CircleCanvas_Over;
-        circleCanvas.Drop += CircleCanvas_Drop;
-        circleCanvas.SizeChanged += CircleCanvas_SizeChanged;
-        AddCircles();
-
-        base.OnApplyTemplate();
     }
 
     private void CircleCanvas_SizeChanged(object sender, SizeChangedEventArgs e)

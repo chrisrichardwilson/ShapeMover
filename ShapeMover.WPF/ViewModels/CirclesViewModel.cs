@@ -34,9 +34,8 @@ public class CirclesViewModel : INotifyPropertyChanged
     private LinkedList<Dictionary<int, Point>> history = new();
     private LinkedListNode<Dictionary<int, Point>> current = new(new Dictionary<int, Point>());
 
-    CirclesModel circlesModel = new();
-
-    IRandomGenerator randomGenerator;
+    private CirclesModel circlesModel = new();
+    private IRandomGenerator randomGenerator;
 
     /// <summary>
     /// Collection of circles to draw on the canvas. key = circle ID, value = position of circle.
@@ -135,18 +134,6 @@ public class CirclesViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// Removes all history beyond the current state, then adds the current state, then sets current to the current state.
-    /// </summary>
-    private void updateHistoryWithNewAction()
-    {
-        while (history.Last != current)
-            history.RemoveLast();
-
-        history.AddLast(new LinkedListNode<Dictionary<int, Point>>(new(Circles)));
-        current = history.Last;
-    }
-
-    /// <summary>
     /// Undoes the last change to Circles collection.
     /// </summary>
     public void Undo()
@@ -189,4 +176,16 @@ public class CirclesViewModel : INotifyPropertyChanged
     /// </summary>
     /// <returns>True if Redo is possible, false otherwise.</returns>
     public bool CanRedo() => current.Next != null;
+
+    /// <summary>
+    /// Removes all history beyond the current state, then adds the current state, then sets current to the current state.
+    /// </summary>
+    private void updateHistoryWithNewAction()
+    {
+        while (history.Last != current)
+            history.RemoveLast();
+
+        history.AddLast(new LinkedListNode<Dictionary<int, Point>>(new(Circles)));
+        current = history.Last;
+    }
 }
