@@ -32,7 +32,6 @@ public class CirclesViewModel : INotifyPropertyChanged
     private Stack<Dictionary<int, Point>> undo = new();
     private Stack<Dictionary<int, Point>> redo = new();
 
-
     private CirclesModel circlesModel = new();
     private IRandomGenerator randomGenerator;
 
