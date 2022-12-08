@@ -17,22 +17,21 @@ public class CirclesViewModel : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    /*The undo/redo logic uses a linked list to store the complete state of the Circles collection with every change.
-      A current node points to the current state. Undo is then enabled by moving the current pointer to the previous
-      node and restoring the Circles collection to that state. Likewise, redo is enabled by moving the current pointer
-      to its next position and restoring the Circles collection to that state. Undo is unavailable if current.Previous
-      is null. Likewise, redo is unavailable if current.Next is null.
+    /*The undo/redo logic uses two stacks, they both store a number of states of the Circles collection. Each time a change
+      to Circles is made (an add or a move) the previous state is pushed to the undo stack. Then undo can be performed by
+      popping from the undo stack. When undo is performed the current state is pushed to the redo stack. Then redo can
+      be performed by popping from the redo stack.
 
-      When a new action is performed (Add or move a circle, without using undo / redo) every node/state beyond the current
-      node is discarded.
+      When a new action is performed (an add or a move without undo/redo) the redo stack is cleared.
 
       This approach uses a memento pattern. An alternative approach would be the Command Pattern to only store the changes
       between states. This benefits from using less memory but is more complicated to implement. I went with the
       memento pattern since it is simpler and the state collection is unlikely to get big enough for the memory
       requirement to become a problem.
      */
-    private LinkedList<Dictionary<int, Point>> history = new();
-    private LinkedListNode<Dictionary<int, Point>> current = new(new Dictionary<int, Point>());
+    private Stack<Dictionary<int, Point>> undo = new();
+    private Stack<Dictionary<int, Point>> redo = new();
+
 
     private CirclesModel circlesModel = new();
     private IRandomGenerator randomGenerator;
@@ -94,8 +93,6 @@ public class CirclesViewModel : INotifyPropertyChanged
         AddCircleCommand = new GenericCommand(AddCircle);
         UndoCommand = new GenericCommand(Undo, CanUndo);
         RedoCommand = new GenericCommand(Redo, CanRedo);
-
-        history.AddLast(current);
     }
 
     /// <summary>
@@ -109,10 +106,10 @@ public class CirclesViewModel : INotifyPropertyChanged
     /// </summary>
     public void AddCircle()
     {
-        circlesModel.AddCircle(new Point(randomGenerator.Generate((int)Math.Floor(CanvasWidth)), randomGenerator.Generate((int)Math.Floor(CanvasHeight))));
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Circles)));
-
         updateHistoryWithNewAction();
+
+        circlesModel.AddCircle(new Point(randomGenerator.Generate((int)Math.Floor(CanvasWidth)), randomGenerator.Generate((int)Math.Floor(CanvasHeight))));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Circles)));        
 
         ((GenericCommand)RedoCommand).RaiseCanExecuteChanged();
         ((GenericCommand)UndoCommand).RaiseCanExecuteChanged();
@@ -125,9 +122,9 @@ public class CirclesViewModel : INotifyPropertyChanged
     /// <param name="location">New location.</param>
     public void MoveCircle(int key, Point location)
     {
-        circlesModel.MoveCircle(key, location);
-
         updateHistoryWithNewAction();
+
+        circlesModel.MoveCircle(key, location);
 
         ((GenericCommand)RedoCommand).RaiseCanExecuteChanged();
         ((GenericCommand)UndoCommand).RaiseCanExecuteChanged();
@@ -138,11 +135,11 @@ public class CirclesViewModel : INotifyPropertyChanged
     /// </summary>
     public void Undo()
     {
-        if (current.Previous == null)
+        if (undo.Count == 0)
             return;
-
-        current = current.Previous;
-        Circles = new(current.Value);
+;
+        redo.Push(Circles);
+        Circles = undo.Pop();
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Circles)));
 
         ((GenericCommand)RedoCommand).RaiseCanExecuteChanged();
@@ -154,11 +151,11 @@ public class CirclesViewModel : INotifyPropertyChanged
     /// </summary>
     public void Redo()
     {
-        if (current.Next == null)
+        if (redo.Count == 0)
             return;
 
-        current = current.Next;
-        Circles = new(current.Value);
+        undo.Push(Circles);
+        Circles = redo.Pop();
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Circles)));
 
         ((GenericCommand)RedoCommand).RaiseCanExecuteChanged();
@@ -169,23 +166,20 @@ public class CirclesViewModel : INotifyPropertyChanged
     /// Determines if Undo can be called. Undo isn't available if there are no states before the current state.
     /// </summary>
     /// <returns>True if Undo is possible, false otherwise.</returns>
-    public bool CanUndo() => current.Previous != null;
+    public bool CanUndo() => undo.Count > 0;
 
     /// <summary>
     /// Determines if Redo can be called. Redo isn't available if there are no states after the current state.
     /// </summary>
     /// <returns>True if Redo is possible, false otherwise.</returns>
-    public bool CanRedo() => current.Next != null;
+    public bool CanRedo() => redo.Count > 0;
 
     /// <summary>
-    /// Removes all history beyond the current state, then adds the current state, then sets current to the current state.
+    /// Clear the redo stack and push the current state onto the undo stack.
     /// </summary>
     private void updateHistoryWithNewAction()
     {
-        while (history.Last != current)
-            history.RemoveLast();
-
-        history.AddLast(new LinkedListNode<Dictionary<int, Point>>(new(Circles)));
-        current = history.Last;
+        redo.Clear();
+        undo.Push(Circles);
     }
 }
