@@ -95,12 +95,6 @@ public class CirclesViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// View Model for Circles View.
-    /// </summary>
-    public CirclesViewModel() : this(new RandomGenerator())
-    { }
-
-    /// <summary>
     /// Adds a circle to the Circles collection in a random position (based on CanvasWidth and CanvasHeight).
     /// </summary>
     public void AddCircle()
